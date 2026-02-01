@@ -42,5 +42,25 @@ ORDER BY total_vendido DESC;
 -- Resultado esperado: Index Scan usando idx_orden_detalles_producto_id
 
 --3
+-- Acelera la búsqueda de productos por categoría
+-- Usado en: ventas_categoria, productos_ran, productos_precio
+
+CREATE INDEX idx_productos_categoria_id ON productos(categoria_id);
+
 COMMENT ON INDEX idx_productos_categoria_id IS 
-'Optimiza joins con tabla categorias';
+'Optimiza joins con tabla categorias y filtros por categoría id';
+
+-- VERIFICACIÓN CON EXPLAIN:
+EXPLAIN ANALYZE
+SELECT p.nombre, c.nombre 
+FROM productos p 
+JOIN categorias c ON p.categoria_id = c.id 
+WHERE c.id = 1;
+
+--4
+-- Acelera el ordenamiento por ingresos en el reporte de categorías
+
+CREATE INDEX idx_orden_detalles_subtotal_desc ON orden_detalles(subtotal DESC);
+
+COMMENT ON INDEX idx_orden_detalles_subtotal_desc IS 
+'Optimiza la paginación y ordenamiento por montos de dinero';
