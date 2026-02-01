@@ -111,7 +111,6 @@ SELECT
     COALESCE(SUM(od.cantidad), 0) AS total_vendido,
     CASE 
         WHEN p.stock = 0 THEN 'AGOTADO'
-        WHEN p.stock < 10 THEN 'CRITICO'
         WHEN p.stock < 50 THEN 'BAJO'
         ELSE 'NORMAL'
     END AS estado
