@@ -8,7 +8,7 @@
 -- Acelera los JOIN entre orden_detalles y ordenes
 -- Usado en: ventas_categoria, recopilacion_clientes
 -- Optimiza queries que filtran por orden_id
-CREATE INDEX idx_orden_detalles_orden_id 
+CREATE INDEX IF NOT EXISTS idx_orden_detalles_orden_id 
 ON orden_detalles(orden_id);
 
 COMMENT ON INDEX idx_orden_detalles_orden_id IS 
@@ -26,7 +26,7 @@ WHERE o.id = 1;
 -- Acelera los JOIN entre orden_detalles y productos
 -- Usado en: productos_ran, inventario_bajo, productos_precio
 -- Optimiza queries que agrupan por producto_id
-CREATE INDEX idx_orden_detalles_producto_id 
+CREATE INDEX IF NOT EXISTS idx_orden_detalles_producto_id 
 ON orden_detalles(producto_id);
 
 COMMENT ON INDEX idx_orden_detalles_producto_id IS 
@@ -45,7 +45,8 @@ ORDER BY total_vendido DESC;
 -- Acelera la búsqueda de productos por categoría
 -- Usado en: ventas_categoria, productos_ran, productos_precio
 
-CREATE INDEX idx_productos_categoria_id ON productos(categoria_id);
+CREATE INDEX IF NOT EXISTS idx_productos_categoria_id 
+ON productos(categoria_id);
 
 COMMENT ON INDEX idx_productos_categoria_id IS 
 'Optimiza joins con tabla categorias y filtros por categoría id';
@@ -60,7 +61,8 @@ WHERE c.id = 1;
 --4
 -- Acelera el ordenamiento por ingresos en el reporte de categorías
 
-CREATE INDEX idx_orden_detalles_subtotal_desc ON orden_detalles(subtotal DESC);
+CREATE INDEX IF NOT EXISTS idx_orden_detalles_subtotal_desc 
+ON orden_detalles(subtotal DESC);
 
 COMMENT ON INDEX idx_orden_detalles_subtotal_desc IS 
 'Optimiza la paginación y ordenamiento por montos de dinero';

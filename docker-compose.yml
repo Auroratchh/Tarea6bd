@@ -3,22 +3,44 @@
 services:
   postgres:
     image: postgres:16-alpine
-    container_name: postgres_container
+    container_name: tarea6_db
     restart: unless-stopped
     environment:
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres123
-      POSTGRES_DB: tarea6
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
     ports:
       - "127.0.0.1:5433:5432"
     volumes:
+      - ./db/01_schema.sql:/docker-entrypoint-initdb.d/01_schema.sql:ro
+      - ./db/02_migrate.sql:/docker-entrypoint-initdb.d/02_migrate.sql:ro
+      - ./db/03_seed.sql:/docker-entrypoint-initdb.d/03_seed.sql:ro
+      - ./db/04_indexes.sql:/docker-entrypoint-initdb.d/04_indexes.sql:ro
+      - ./db/05_reports_vw.sql:/docker-entrypoint-initdb.d/05_reports_vw.sql:ro
+      - ./db/06_roles.sql:/docker-entrypoint-initdb.d/06_roles.sql:ro
       - postgres_data:/var/lib/postgresql/data
-      - ./db:/docker-entrypoint-initdb.d:ro
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U postgres -d tarea6"]
-      interval: 10s
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
+      interval: 5s
       timeout: 5s
       retries: 5
+    
+
+  nextjs:
+    build: ./reports
+    container_name: tarea6db_web
+    ports:
+      - "3000:3000"
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_HOST: postgres
+      POSTGRES_PORT: ${POSTGRES_PORT}
+    depends_on:
+      postgres:
+        condition: service_healthy
+    command: npm run dev
 
 volumes:
   postgres_data:
