@@ -1,5 +1,8 @@
 # Tarea 6: Next.js Reports Dashboard
 
+### Nombre: Brittany Aurora Hernández Muñoz
+### Matrícula: 243707
+
 Dashboard de reportes con PostgreSQL views, Next.js 16 App Router, y Docker Compose.
 
 ## Instalación
