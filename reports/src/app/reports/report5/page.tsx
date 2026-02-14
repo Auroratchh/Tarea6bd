@@ -1,12 +1,5 @@
-import { query } from '../../../../lib/db';
 import KPICard from '../../report';
-import { z } from 'zod';
 import Link from 'next/link';
-
-const QuerySchema = z.object({
-  rango: z.enum(['CARO', 'MEDIO', 'ECONOMICO', '']).optional().default(''),
-  page: z.coerce.number().min(1).default(1),
-});
 
 interface ProductosPrecio {
   nombre: string;
@@ -17,33 +10,30 @@ interface ProductosPrecio {
   rango_precio: string;
 }
 
+interface ApiResponse {
+  data: ProductosPrecio[];
+  caros: number;
+  economicos: number;
+  hasMore: boolean;
+}
+
+async function getData(rango: string, page: number): Promise<ApiResponse> {
+  const url = `/api/reports/report5?rango=${encodeURIComponent(rango)}&page=${page}`;
+  const res = await fetch(url, { cache: 'no-store' });
+  if (!res.ok) throw new Error('Error al obtener datos');
+  return res.json();
+}
+
 export default async function PreciosPage({
   searchParams,
 }: {
   searchParams: { [key: string]: string | string[] | undefined };
 }) {
-
   const decodedParams = await searchParams;
-  const { rango, page } = QuerySchema.parse(decodedParams);
+  const rango = (decodedParams.rango as string) || '';
+  const page = parseInt((decodedParams.page as string) || '1');
   
-  const limit = 5;
-  const offset = (page - 1) * limit;
-
-  let sql = 'SELECT * FROM productos_precio';
-  const params: any[] = [];
-
-  if (rango) {
-    sql += ' WHERE rango_precio = $1 ORDER BY precio DESC LIMIT $2 OFFSET $3';
-    params.push(rango, limit, offset);
-  } else {
-    sql += ' ORDER BY precio DESC LIMIT $1 OFFSET $2';
-    params.push(limit, offset);
-  }
-
-  const data = await query<ProductosPrecio>(sql, params);
-  
-  const caros = data.filter(p => p.rango_precio === 'CARO').length;
-  const economicos = data.filter(p => p.rango_precio === 'ECONOMICO').length;
+  const { data, caros, economicos, hasMore } = await getData(rango, page);
 
   return (
     <div className="container">
@@ -111,7 +101,7 @@ export default async function PreciosPage({
         <span className="page-number">Página {page}</span>
         <Link 
           href={`?page=${page + 1}&rango=${rango}`}
-          className={`nav-link ${data.length < limit ? 'disabled' : ''}`}
+          className={`nav-link ${!hasMore ? 'disabled' : ''}`}
         >
           Siguiente &rarr;
         </Link>

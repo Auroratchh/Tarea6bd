@@ -1,11 +1,11 @@
 import Link from 'next/link';
 
 const reports = [
-  { id: 1, title: 'Reporte 1', href: '/reports/report1'},
-  { id: 2, title: 'Reporte 2', href: '/reports/report2' },
-  { id: 3, title: 'Reporte 3', href: '/reports/report3'},
-  { id: 4, title: 'Reporte 4', href: '/reports/report4'},
-  { id: 5, title: 'Reporte 5', href: '/reports/report5'},
+  { id: 1, title: 'Reporte 1: Ventas por Categoría', href: '/reports/report1'},
+  { id: 2, title: 'Reporte 2: Ranking de Productos', href: '/reports/report2' },
+  { id: 3, title: 'Reporte 3: Recopilación de Clientes', href: '/reports/report3'},
+  { id: 4, title: 'Reporte 4: Inventario Crítico', href: '/reports/report4'},
+  { id: 5, title: 'Reporte 5: Análisis de Precios', href: '/reports/report5'},
 ];
 
 export default function HomePage() {

@@ -1,6 +1,4 @@
-import { query } from '../../../../lib/db';
 import KPICard from '../../report';
-import Link from 'next/link';
 
 interface RecopilacionClientes {
   id: number;
@@ -12,16 +10,20 @@ interface RecopilacionClientes {
   tipo_cliente: string;
 }
 
-async function getData() {
-  const sql = 'SELECT * FROM recopilacion_clientes ORDER BY total_gastado DESC';
-  return await query<RecopilacionClientes>(sql);
+interface ApiResponse {
+  data: RecopilacionClientes[];
+  totalGastado: number;
+  clientesAlto: number;
+}
+
+async function getData(): Promise<ApiResponse> {
+  const res = await fetch('/api/reports/report3', { cache: 'no-store' });
+  if (!res.ok) throw new Error('Error al obtener datos');
+  return res.json();
 }
 
 export default async function ClientesPage() {
-  const data = await getData();
-  
-  const totalGastado = data.reduce((sum, row) => sum + parseFloat(row.total_gastado), 0);
-  const clientesAlto = data.filter(c => c.tipo_cliente === 'ALTO' || c.tipo_cliente === 'VIP').length;
+  const { data, totalGastado, clientesAlto } = await getData();
 
   return (
     <div>

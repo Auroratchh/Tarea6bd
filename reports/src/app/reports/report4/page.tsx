@@ -1,4 +1,3 @@
-import { query } from '../../../../lib/db';
 import KPICard from '../../report';
 
 interface InventarioBajo {
@@ -9,15 +8,19 @@ interface InventarioBajo {
   estado: string;
 }
 
-async function getData() {
-  const sql = 'SELECT * FROM inventario_bajo ORDER BY stock ASC';
-  return await query<InventarioBajo>(sql);
+interface ApiResponse {
+  data: InventarioBajo[];
+  agotados: number;
+}
+
+async function getData(): Promise<ApiResponse> {
+  const res = await fetch('/api/reports/report4', { cache: 'no-store' });
+  if (!res.ok) throw new Error('Error al obtener datos');
+  return res.json();
 }
 
 export default async function InventarioPage() {
-  const data = await getData();
-  
-  const agotados = data.filter(p => p.estado === 'AGOTADO').length;
+  const { data, agotados } = await getData();
 
   return (
     <div>

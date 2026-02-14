@@ -1,6 +1,4 @@
-import { query } from '../../../../lib/db';
 import KPICard from '../../report';
-import Link from 'next/link';
 
 interface ProductosRan {
   id: number;
@@ -11,16 +9,20 @@ interface ProductosRan {
   ranking: number;
 }
 
-async function getData() {
-  const sql = 'SELECT * FROM productos_ran ORDER BY ranking ASC';
-  return await query<ProductosRan>(sql);
+interface ApiResponse {
+  data: ProductosRan[];
+  totalIngresos: number;
+  totalCantidad: number;
+}
+
+async function getData(): Promise<ApiResponse> {
+  const res = await fetch('/api/reports/report2', { cache: 'no-store' });
+  if (!res.ok) throw new Error('Error al obtener datos');
+  return res.json();
 }
 
 export default async function ProductosTopPage() {
-  const data = await getData();
-  
-  const totalIngresos = data.reduce((sum, row) => sum + parseFloat(row.ingresos), 0);
-  const totalCantidad = data.reduce((sum, row) => sum + row.cantidad_vendida, 0);
+  const { data, totalIngresos, totalCantidad } = await getData();
 
   return (
     <div>

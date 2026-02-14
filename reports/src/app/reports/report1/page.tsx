@@ -1,12 +1,5 @@
-import { query } from '../../../../lib/db';
 import KPICard from '../../report';
-import { z } from 'zod';
 import Link from 'next/link';
-
-const QuerySchema = z.object({
-  search: z.string().optional().default(''),
-  page: z.coerce.number().min(1).default(1),
-});
 
 interface VentasCategoria {
   categoria: string;
@@ -15,30 +8,30 @@ interface VentasCategoria {
   precio_promedio: string;
 }
 
+interface ApiResponse {
+  data: VentasCategoria[];
+  totalIngresos: number;
+  hasMore: boolean;
+}
+
+async function getData(search: string, page: number): Promise<ApiResponse> {
+  const url = `/api/reports/report1?search=${encodeURIComponent(search)}&page=${page}`;
+  const res = await fetch(url, { cache: 'no-store' });
+  if (!res.ok) throw new Error('Error al obtener datos');
+  return res.json();
+}
+
 export default async function VentasCategoriaPage({
   searchParams,
 }: {
   searchParams: { [key: string]: string | string[] | undefined };
 }) {
-  const decodedParams = await searchParams; 
-  const { search, page } = QuerySchema.parse(decodedParams);
+  const decodedParams = await searchParams;
+  const search = (decodedParams.search as string) || '';
+  const page = parseInt((decodedParams.page as string) || '1');
   
-  const limit = 5; 
-  const offset = (page - 1) * limit;
-
-  let sql = 'SELECT * FROM ventas_categoria';
-  const params: any[] = [];
-
-  if (search && search.trim() !== '') {
-    sql += ' WHERE categoria ILIKE $1 ORDER BY ingresos_totales DESC LIMIT $2 OFFSET $3';
-    params.push(`%${search}%`, limit, offset);
-  } else {
-    sql += ' ORDER BY ingresos_totales DESC LIMIT $1 OFFSET $2';
-    params.push(limit, offset);
-  }
-
-  const data = await query<VentasCategoria>(sql, params);
-  const totalIngresos = data.reduce((sum, row) => sum + parseFloat(row.ingresos_totales), 0);
+  const { data, totalIngresos, hasMore } = await getData(search, page);
+  const limit = 5;
 
   return (
     <div className="container">
@@ -93,7 +86,7 @@ export default async function VentasCategoriaPage({
           &larr; Anterior
         </Link>
         <span className="page-number">Página {page}</span>
-        <Link href={`?page=${page + 1}&search=${search}`} className={`nav-link ${data.length < limit ? 'disabled' : ''}`}>
+        <Link href={`?page=${page + 1}&search=${search}`} className={`nav-link ${!hasMore ? 'disabled' : ''}`}>
           Siguiente &rarr;
         </Link>
       </div>

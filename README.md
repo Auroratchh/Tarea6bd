@@ -51,6 +51,7 @@ Paso 3: Configurar Next.js
 
 ``` cd reports ``` 
 ``` npm install ``` 
+
 Crear archivo .env.local
 
 ``` DATABASE_URL=postgresql://[usuario]:[contraseña]@localhost:5433/[db] ```
