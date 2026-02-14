@@ -14,9 +14,14 @@ export async function GET() {
   try {
     const sql = 'SELECT * FROM productos_ran ORDER BY ranking ASC';
     const data = await query<ProductosRan>(sql);
+  
+    const totalIngresos = data.reduce((sum, row) => {
+      return sum + parseFloat(row.ingresos);
+    }, 0);
     
-    const totalIngresos = data.reduce((sum, row) => sum + parseFloat(row.ingresos), 0);
-    const totalCantidad = data.reduce((sum, row) => sum + row.cantidad_vendida, 0);
+    const totalCantidad = data.reduce((sum, row) => {
+      return sum + Number(row.cantidad_vendida);
+    }, 0);
 
     return NextResponse.json({
       data,

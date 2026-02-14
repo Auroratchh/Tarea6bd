@@ -1,4 +1,5 @@
 import KPICard from '../../report';
+import Link from 'next/link';
 
 interface ProductosRan {
   id: number;
@@ -16,7 +17,8 @@ interface ApiResponse {
 }
 
 async function getData(): Promise<ApiResponse> {
-  const res = await fetch('/api/reports/report2', { cache: 'no-store' });
+  const baseUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000';
+  const res = await fetch(`${baseUrl}/api/top-productos`, { cache: 'no-store' });
   if (!res.ok) throw new Error('Error al obtener datos');
   return res.json();
 }
@@ -26,9 +28,10 @@ export default async function ProductosTopPage() {
 
   return (
     <div>
+      <Link href="/" className="back-link"> Volver a Reportes</Link>
       <div className="header">
         <h1>Productos Más Vendidos</h1>
-        <p>TRanking de productos</p>
+        <p>Ranking de productos</p>
       </div>
 
       <div className="kpi-grid">

@@ -18,7 +18,8 @@ interface ApiResponse {
 }
 
 async function getData(rango: string, page: number): Promise<ApiResponse> {
-  const url = `/api/reports/report5?rango=${encodeURIComponent(rango)}&page=${page}`;
+  const baseUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000';
+  const url = `${baseUrl}/api/precios?rango=${encodeURIComponent(rango)}&page=${page}`;
   const res = await fetch(url, { cache: 'no-store' });
   if (!res.ok) throw new Error('Error al obtener datos');
   return res.json();
@@ -37,6 +38,7 @@ export default async function PreciosPage({
 
   return (
     <div className="container">
+      <Link href="/" className="back-link"> Volver a Reportes</Link>
       <div className="header">
         <h1>Productos por rango de precio</h1>
         <p>Clasificación de productos según precio</p>

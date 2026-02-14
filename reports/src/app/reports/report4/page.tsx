@@ -1,4 +1,5 @@
 import KPICard from '../../report';
+import Link from 'next/link';
 
 interface InventarioBajo {
   codigo: string;
@@ -14,7 +15,8 @@ interface ApiResponse {
 }
 
 async function getData(): Promise<ApiResponse> {
-  const res = await fetch('/api/reports/report4', { cache: 'no-store' });
+  const baseUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000';
+  const res = await fetch(`${baseUrl}/api/inventario`, { cache: 'no-store' });
   if (!res.ok) throw new Error('Error al obtener datos');
   return res.json();
 }
@@ -24,6 +26,7 @@ export default async function InventarioPage() {
 
   return (
     <div>
+      <Link href="/" className="back-link"> Volver a Reportes</Link>
       <div className="header">
         <h1>Inventario Bajo</h1>
         <p>Productos con stock bajo</p>

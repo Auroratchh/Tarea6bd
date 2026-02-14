@@ -233,3 +233,17 @@ tr:hover {
   padding: 5px 15px;
   border-radius: 20px;
 }
+
+.back-link {
+  display: inline-block;
+  margin-bottom: 20px;
+  color: #1F2937;
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 14px;
+  transition: color 0.2s;
+}
+
+.back-link:hover {
+  color: #374151;
+}

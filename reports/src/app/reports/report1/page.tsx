@@ -15,7 +15,9 @@ interface ApiResponse {
 }
 
 async function getData(search: string, page: number): Promise<ApiResponse> {
-  const url = `/api/reports/report1?search=${encodeURIComponent(search)}&page=${page}`;
+  const baseUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000';
+  const url = `${baseUrl}/api/ventas-categoria?search=${encodeURIComponent(search)}&page=${page}`;
+  
   const res = await fetch(url, { cache: 'no-store' });
   if (!res.ok) throw new Error('Error al obtener datos');
   return res.json();
@@ -31,13 +33,14 @@ export default async function VentasCategoriaPage({
   const page = parseInt((decodedParams.page as string) || '1');
   
   const { data, totalIngresos, hasMore } = await getData(search, page);
-  const limit = 5;
 
   return (
     <div className="container">
+      <Link href="/" className="back-link"> Volver a Reportes</Link>
       <div className="header">
         <h1>Ventas por Categoría</h1>
         <p>Análisis de ingresos filtrado y paginado desde el servidor</p>
+
         
         <form method="GET" className="filter-container">
           <input 
